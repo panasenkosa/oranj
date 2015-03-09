@@ -59,7 +59,7 @@ public class Configuration {
 	}
 
 	/**
-	 * Creates a new oranj Configuration instance/
+	 * Creates a new oranj Configuration instance.
 	 * The instance initialization includes loading of all user-defined
 	 * type and interface mappings from the xml-configuration files and annotations.
 	 * The mappings are checked for completeness and correctness.
