@@ -13,8 +13,7 @@
 
 package org.oranj;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -41,20 +40,17 @@ import org.xml.sax.SAXException;
 import org.oranj.exceptions.ProxyCreationException;
 import org.oranj.mappings.xml.MappingsLoader;
 
-public class Configuration {
+public class OranjProxyFactory {
 	
 	
 	private OracleHelper oracleHelper;
-
-	private HashMap<String, String> properties = new HashMap<String, String>();
 			
 	private DataSource 		dataSource;
-
 
 	/**
 	 * Creates a new oranj Configuration instance.
 	 */
-	public Configuration() {
+	public OranjProxyFactory() {
 
 	}
 
@@ -67,7 +63,7 @@ public class Configuration {
 	 * @throws SQLException
 	 * @throws org.oranj.exceptions.InitConfigurationException
 	 */
-	public Configuration(DataSource ds) throws OranjException {
+	public OranjProxyFactory(DataSource ds) throws OranjException {
 		this.dataSource = ds;
 	}	
 
@@ -94,7 +90,10 @@ public class Configuration {
 		return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{clazz}, 
 				new DBCallHandler(clazz, oracleHelper, baseObject));
 	}
-	
+
+	public void loadConfig(String configFileName) throws InitConfigurationException {
+		loadConfig(null, configFileName);
+	}
 	public void loadConfig(ServletContext servletContext, String configFileName) throws InitConfigurationException {
 		
 		Set<String> resourceFiles = new HashSet<String>();
@@ -103,7 +102,18 @@ public class Configuration {
 		
 		String errorMessage = "Error loading \"" + configFileName + "\" oranj configuration file";
 
-		InputStream inStream = servletContext.getResourceAsStream(configFileName);
+		InputStream inStream = null;
+		if (servletContext!=null) {
+			inStream = servletContext.getResourceAsStream(configFileName);
+		}  else {
+			File file = new File(configFileName);
+			try {
+				inStream = new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				throw new InitConfigurationException("Configuration file "
+						+ configFileName + " not found!");
+			}
+		}
 
 		if (inStream != null) {
 			DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
@@ -122,19 +132,12 @@ public class Configuration {
 				} catch (IOException e) {
 					throw new InitConfigurationException(errorMessage, e);
 				}
-				
+
 				if (this.dataSource==null)
-					tryLoadDataSourceConfig(document);
-				
-				//loading properties
-				NodeList nodes = document.getElementsByTagName("property");				
-				for (int i=0; i<nodes.getLength(); i++) {
-					Element node = (Element)nodes.item(i);
-					properties.put(node.getAttribute("name"), node.getAttribute("value"));					
-				}
-				
+					throw new InitConfigurationException("No data source!");
+
 				//loading resource file names and annotated class names
-				nodes = document.getElementsByTagName("mappings");				
+				NodeList nodes = document.getElementsByTagName("mappings");
 				for (int i=0; i<nodes.getLength(); i++) {
 					Element node = (Element)nodes.item(i);
 					NodeList subNodes = node.getElementsByTagName("file");
@@ -175,47 +178,7 @@ public class Configuration {
 		}*/
 
 	}
-	
-	private void tryLoadDataSourceConfig(Document document) throws InitConfigurationException {
-		
-		NodeList nodes = document.getElementsByTagName("data-source");
-		if (nodes!=null && nodes.getLength()>0) {
-			Element dsNode = (Element) nodes.item(0);
-			String url 		= dsNode.getAttribute("url");
-			String username = dsNode.getAttribute("user");
-			String password = dsNode.getAttribute("password");
-			String className = dsNode.getAttribute("class");
-			
-			String errorMessage = "Error obtaining DataSource instance based on oranj config file properties";
-				try {
-					Class dsClass = Class.forName(className);
-					DataSource ds = (DataSource) dsClass.newInstance();
-					Method setUrlMethod = dsClass.getMethod("setURL", String.class);
-					setUrlMethod.invoke(ds, url);
-					Method setUsernameMethod = dsClass.getMethod("setUser", String.class);
-					setUsernameMethod.invoke(ds, username);
-					Method setPasswordMethod = dsClass.getMethod("setPassword", String.class);
-					setPasswordMethod.invoke(ds, password);	
-					this.dataSource = ds;
-				}  catch (ClassNotFoundException e) {
-					throw new InitConfigurationException(
-							errorMessage, e);				
-				} catch (InstantiationException e) {
-					throw new InitConfigurationException(
-							errorMessage, e);				
-				} catch (IllegalAccessException e) {
-					throw new InitConfigurationException(
-							errorMessage, e);
-				} catch (NoSuchMethodException e) {
-					throw new InitConfigurationException(
-							errorMessage, e);
-				} catch (InvocationTargetException e) {
-					throw new InitConfigurationException(
-							errorMessage, e);
-				}			
-		}
-		
-	}
+
 	
 	/**
 	 * Returns data source object currently using by the library
@@ -223,10 +186,6 @@ public class Configuration {
 	 */
 	public DataSource getDataSource() {
 		return dataSource;
-	}
-	
-	String getProperty(String name) {
-		return properties.get(name);
 	}
 
 

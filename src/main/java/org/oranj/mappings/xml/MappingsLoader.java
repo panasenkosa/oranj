@@ -13,8 +13,7 @@
 
 package org.oranj.mappings.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -44,9 +43,19 @@ public class MappingsLoader {
 	private void loadXMLMapping(ServletContext servletContext, String fileName, DocumentBuilder builder)
 			throws InitConfigurationException {
 
-		InputStream inStream = servletContext.getResourceAsStream(fileName);
-		//File file = new File(fileName);
-		//if (file.exists()){
+		InputStream inStream = null;
+		if (servletContext!=null) {
+			inStream = servletContext.getResourceAsStream(fileName);
+		}  else {
+			File file = new File(fileName);
+			try {
+				inStream = new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				throw new InitConfigurationException("Configuration file "
+						+ fileName + " not found!");
+			}
+		}
+
 		if (inStream != null) {
 				Document document;
 				try {
