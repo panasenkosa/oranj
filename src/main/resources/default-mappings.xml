@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mappings PUBLIC "-//oranj/oranj mappings DTD 1.0//EN"
+		"oranj-mappings-1.0.dtd">
+
+<mappings>
+
+	<value-mapping class="java.lang.String">					
+			<sql-type name="CHAR"/>
+			<sql-type name="VARCHAR2"/>
+			<sql-type name="CHARACTER"/>
+			<sql-type name="STRING"/>
+			<sql-type name="VARCHAR"/>
+			<sql-type name="LONG"/>
+			<sql-type name="CLOB"
+			to-oracle-method="org.oranj.convert.standards.LobConversions.stringToClob"
+			from-oracle-method="org.oranj.convert.standards.LobConversions.clobToString" />
+			<sql-type name="ROWID"/>																	
+	</value-mapping>
+
+	<value-mapping class="java.util.Date">					
+			<sql-type name="DATE"
+			to-oracle-method="org.oranj.convert.standards.DateConversions.utilDateToDate"
+			from-oracle-method="org.oranj.convert.standards.DateConversions.utilDateFromDate" />
+			<sql-type name="TIMESTAMP"
+			to-oracle-method="org.oranj.convert.standards.DateConversions.utilDateToDate"
+			from-oracle-method="org.oranj.convert.standards.DateConversions.utilDateFromDate" />
+	</value-mapping>
+
+	<value-mapping class="[B">					
+			<sql-type name="BLOB"
+			to-oracle-method="org.oranj.convert.standards.LobConversions.byteArrayToBlob"
+			from-oracle-method="org.oranj.convert.standards.LobConversions.blobToByteArray" />
+	</value-mapping>	
+
+	<value-mapping class="java.math.BigDecimal">					
+		<sql-type name="PLS_INTEGER"/>
+		<sql-type name="BINARY_INTEGER"/>
+		<sql-type name="NATURAL"/>
+		<sql-type name="NATURALN"/>
+		<sql-type name="POSITIVE"/>
+		<sql-type name="POSITIVEN"/>
+		<sql-type name="NUMBER" />
+		<sql-type name="DEC" />
+		<sql-type name="DECIMAL" />
+		<sql-type name="NUMERIC" />
+		<sql-type name="FLOAT" />
+		<sql-type name="INT"/>
+		<sql-type name="SMALLINT"/>
+		<sql-type name="INTEGER"/>
+		<sql-type name="REAL" />																	
+	</value-mapping>
+
+	<value-mapping class="java.math.BigInteger">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.bigIntegerToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToBigInteger" />
+	</value-mapping>
+
+	<value-mapping class="byte">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToByte" />
+	</value-mapping>
+
+	<value-mapping class="java.lang.Byte">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToByte" />
+	</value-mapping>	
+	
+	<value-mapping class="java.lang.Short">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToShort" />
+	</value-mapping>
+		
+	<value-mapping class="short">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToShort" />
+	</value-mapping>
+	
+	<value-mapping class="int">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToInt" />
+			<sql-type name="INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.int_INTEGER"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.INTEGER_int" />
+			<sql-type name="BINARY_INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.int_BINARYINTEGER"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYINTEGER_int" />
+	</value-mapping>
+		
+	<value-mapping class="java.lang.Integer">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.intToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToInt" />
+			<sql-type name="INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.int_INTEGER"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.INTEGER_int" />
+			<sql-type name="BINARY_INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.int_BINARYINTEGER"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYINTEGER_int" />
+	</value-mapping>	
+	
+	<value-mapping class="long">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+			<sql-type name="INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+			<sql-type name="LONG"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+	</value-mapping>	
+	
+	<value-mapping class="java.lang.Long">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+			<sql-type name="INTEGER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+			<sql-type name="LONG"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.longToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToLong" />
+	</value-mapping>
+	
+	<value-mapping class="float">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.doubleToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToFloat" />
+			<sql-type name="BINARY_FLOAT"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.float_BINARYFLOAT"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYFLOAT_float" />
+	</value-mapping>	
+	
+	<value-mapping class="java.lang.Float">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.doubleToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToFloat" />
+			<sql-type name="BINARY_FLOAT"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.float_BINARYFLOAT"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYFLOAT_float" />
+	</value-mapping>	
+	
+	<value-mapping class="double">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.doubleToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToDouble" />
+			<sql-type name="BINARY_DOUBLE"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.double_BINARYDOUBLE"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYDOUBLE_double" />
+	</value-mapping>	
+		
+	<value-mapping class="java.lang.Double">					
+			<sql-type name="NUMBER"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.doubleToBigDecimal"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToDouble" />
+			<sql-type name="BINARY_DOUBLE"
+				to-oracle-method="org.oranj.convert.standards.NumberConversions.double_BINARYDOUBLE"
+				from-oracle-method="org.oranj.convert.standards.NumberConversions.BINARYDOUBLE_double" />
+	</value-mapping>				
+	
+	<value-mapping class="boolean">
+		<sql-type name="NUMBER"
+			to-oracle-method="org.oranj.convert.standards.NumberConversions.booleanToBigDecimal"
+			from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToBoolean" />
+	</value-mapping>
+
+	<value-mapping class="java.lang.Boolean">
+		<sql-type name="NUMBER"
+			to-oracle-method="org.oranj.convert.standards.NumberConversions.booleanToBigDecimal"
+			from-oracle-method="org.oranj.convert.standards.NumberConversions.bigDecimalToBoolean" />
+	</value-mapping>
+
+
+</mappings>

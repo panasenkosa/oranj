@@ -1,0 +1,67 @@
+<!ELEMENT mappings ((class-mapping | value-mapping | oracle-package)*)>
+
+        <!ELEMENT class-mapping (oracle-type*, field*, property-group*)>
+        <!ATTLIST class-mapping class CDATA #REQUIRED>
+        <!ATTLIST class-mapping oracle-type CDATA #REQUIRED>
+        <!ATTLIST class-mapping owner CDATA #IMPLIED>
+        <!ATTLIST class-mapping field-mapping (exact|custom) "custom">
+        <!ATTLIST class-mapping include-fields CDATA #IMPLIED>
+        <!ATTLIST class-mapping exclude-fields CDATA #IMPLIED>
+
+
+        <!ELEMENT field EMPTY>
+        <!ATTLIST field name    CDATA #REQUIRED>
+        <!ATTLIST field oracle-name CDATA #IMPLIED>
+        <!ATTLIST field element-class CDATA #IMPLIED>
+        <!ATTLIST field collection-merging (update|reload|append) "reload">
+
+        <!ELEMENT property-group (property*)>
+        <!ATTLIST property-group name    CDATA #IMPLIED>
+        <!ATTLIST property-group behaviour    (skip|pass) "pass">
+        <!ATTLIST property-group default    (true|false) "false">
+
+        <!ELEMENT property EMPTY>
+        <!ATTLIST property name  CDATA #REQUIRED>
+        <!ATTLIST property property-group  CDATA #IMPLIED>
+
+        <!ELEMENT value-mapping (sql-type*)>
+        <!ATTLIST value-mapping class CDATA #REQUIRED>
+
+        <!ELEMENT sql-type EMPTY>
+        <!ATTLIST sql-type name CDATA #REQUIRED>
+        <!ATTLIST sql-type to-oracle-method CDATA #IMPLIED>
+        <!ATTLIST sql-type from-oracle-method CDATA #IMPLIED>
+        <!ATTLIST sql-type bind-method CDATA #IMPLIED>
+        <!ATTLIST sql-type update-method CDATA #IMPLIED>
+
+
+        <!ELEMENT oracle-type (procedure*)>
+        <!ATTLIST oracle-type class CDATA #REQUIRED>
+
+        <!ELEMENT oracle-package (procedure*)>
+        <!ATTLIST oracle-package class CDATA #REQUIRED>
+        <!ATTLIST oracle-package name CDATA #REQUIRED>
+        <!ATTLIST oracle-package owner CDATA #IMPLIED>
+
+        <!ELEMENT procedure (return?, argument*)>
+        <!ATTLIST procedure java-name CDATA #REQUIRED>
+        <!ATTLIST procedure oracle-name CDATA #REQUIRED>
+        <!ATTLIST procedure in-group CDATA #IMPLIED>
+        <!ATTLIST procedure out-group CDATA #IMPLIED>
+
+        <!ELEMENT argument EMPTY>
+        <!ATTLIST argument position CDATA #REQUIRED>
+        <!ATTLIST argument class    CDATA #REQUIRED>
+        <!ATTLIST argument oracle-name CDATA #IMPLIED>
+        <!ATTLIST argument element-class CDATA #IMPLIED>
+        <!ATTLIST argument in-group CDATA #IMPLIED>
+        <!ATTLIST argument out-group CDATA #IMPLIED>
+        <!ATTLIST argument collection-merging (update|reload|append) "reload">
+
+        <!ELEMENT return EMPTY>
+        <!ATTLIST return class    CDATA #REQUIRED>
+        <!ATTLIST return element-class CDATA #IMPLIED>
+        <!ATTLIST return in-group CDATA #IMPLIED>
+        <!ATTLIST return out-group CDATA #IMPLIED>
+
+		
