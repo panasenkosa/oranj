@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.oranj.OranjProxyFactory;
 import org.oranj.dbprocs.MappedObject;
 import org.oranj.exceptions.InitConfigurationException;
 import org.oranj.mappings.MappingHelper;
@@ -40,64 +41,29 @@ public class MappingsLoader {
 	}
 	
 	//loading all kind of mappings from xml configuration file
-	private void loadXMLMapping(ServletContext servletContext, String fileName, DocumentBuilder builder)
+	private void loadXMLMapping(ServletContext servletContext, String fileName)
 			throws InitConfigurationException {
 
-		InputStream inStream = null;
-		if (servletContext!=null) {
-			inStream = servletContext.getResourceAsStream(fileName);
-		}  else {
-			File file = new File(fileName);
-			try {
-				inStream = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				throw new InitConfigurationException("Configuration file "
-						+ fileName + " not found!");
-			}
-		}
+		Document document = XMLParsersHelper.parseXMLFile(servletContext, fileName);
 
-		if (inStream != null) {
-				Document document;
-				try {
-					//document = builder.parsePackage(fileName);
-					document = builder.parse(inStream);
-					ValueTypeMappingParser.parse(document, helper);
-					ClassTypeMappingParser.parse(document, helper);
-					DBObjectMappingParser.parsePackage(document, helper.getOracleHelper());
-				} catch (SAXException e) {
-					throw new InitConfigurationException("Error in parsing \"" 
-							+ fileName + "\" xml mapping file", e);
-				} catch (IOException e) {
-					throw new InitConfigurationException("Error in parsing \"" 
-							+ fileName + "\" xml mapping file", e);
-				} 
+		ValueTypeMappingParser.parse(document, helper);
+		ClassTypeMappingParser.parse(document, helper);
+		DBObjectMappingParser.parsePackage(document, helper.getOracleHelper());
 
-		} else
-			throw new InitConfigurationException("XML mapping resource file "
-					+ fileName + " not found!");
 	}
 	
 	//entry point for loading all mappings
-	public void loadMappings(ServletContext servletContext,
-							 Set<String> resourceFiles,
-							 Set<String> annotatedTypes,
-							 Set<String> annotatedProxies)
+	public void loadMappings(ServletContext servletContext, OranjProxyFactory.ConfigElements configTopElements)
+
 				throws InitConfigurationException {
-		
-		DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder;
-		try {
-			builder = fact.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			throw new InitConfigurationException(e);
-		}
+
 		
 		//loading all kinds of mappings from resource files 
-		for (String fileName : resourceFiles) 
-				loadXMLMapping(servletContext, fileName, builder);
+		for (String fileName : configTopElements.getResourceFiles())
+				loadXMLMapping(servletContext, fileName);
 
 		//loading class to object type mappings from annotations
-		for (String className : annotatedTypes) 
+		for (String className : configTopElements.getAnnotatedTypes())
 				ClassMappingLoader.loadMapping(className, helper);			
 		
 
@@ -105,7 +71,7 @@ public class MappingsLoader {
 
 
 		//loading java interface to db-object mappings from annotations
-		for (String className : annotatedProxies) 
+		for (String className : configTopElements.getAnnotatedProxies())
 				ObjectMappingLoader.loadMapping(className, helper.getOracleHelper());
 
 		

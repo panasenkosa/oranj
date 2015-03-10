@@ -13,13 +13,65 @@
 
 package org.oranj.mappings.xml;
 
+import java.io.*;
 import java.lang.reflect.Method;
 
+import org.oranj.exceptions.InitConfigurationException;
+import org.oranj.exceptions.ParseXMLException;
 import org.oranj.utils.StringUtils;
 import org.oranj.utils.Utils;
 import org.oranj.exceptions.InvalidMappingException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.servlet.ServletContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class XMLParsersHelper {
+
+
+	public static Document parseXMLFile(ServletContext servletContext, String configFileName) throws ParseXMLException{
+		InputStream inStream = null;
+		if (servletContext!=null) {
+			inStream = servletContext.getResourceAsStream(configFileName);
+		}  else {
+			File file = new File(configFileName);
+			try {
+				inStream = new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				throw new ParseXMLException("Configuration file "
+						+ configFileName + " not found!");
+			}
+		}
+		String errorMessage = "Error loading \"" + configFileName + "\" oranj configuration file";
+
+		Document document = null;
+
+		if (inStream != null) {
+			DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = null;
+
+			try {
+				builder = fact.newDocumentBuilder();
+			} catch (ParserConfigurationException e) {
+				throw new ParseXMLException(errorMessage, e);
+			}
+			try {
+				document = builder.parse(inStream);
+			} catch (SAXException e) {
+				throw new ParseXMLException(errorMessage, e);
+			} catch (IOException e) {
+				throw new ParseXMLException(errorMessage, e);
+			}
+		}
+		else {
+			throw new ParseXMLException("Configuration file "
+					+ configFileName + " not found!");
+		}
+		return document;
+	}
 
 	public static Class getClassByName(String className) throws InvalidMappingException {
 		

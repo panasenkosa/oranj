@@ -32,6 +32,7 @@ import org.oranj.dbprocs.OracleHelper;
 import org.oranj.exceptions.InitConfigurationException;
 import org.oranj.exceptions.OranjException;
 import org.oranj.mappings.MappingHelper;
+import org.oranj.mappings.xml.XMLParsersHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -95,78 +96,22 @@ public class OranjProxyFactory {
 		loadConfig(null, configFileName);
 	}
 	public void loadConfig(ServletContext servletContext, String configFileName) throws InitConfigurationException {
-		
-		Set<String> resourceFiles = new HashSet<String>();
-		Set<String> annotatedTypes = new HashSet<String>();		
-		Set<String> annotatedProxies = new HashSet<String>();
-		
-		String errorMessage = "Error loading \"" + configFileName + "\" oranj configuration file";
 
-		InputStream inStream = null;
-		if (servletContext!=null) {
-			inStream = servletContext.getResourceAsStream(configFileName);
-		}  else {
-			File file = new File(configFileName);
-			try {
-				inStream = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				throw new InitConfigurationException("Configuration file "
-						+ configFileName + " not found!");
-			}
-		}
 
-		if (inStream != null) {
-			DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = null;
 
-				try {
-					builder = fact.newDocumentBuilder();
-				} catch (ParserConfigurationException e) {
-					throw new InitConfigurationException(errorMessage, e);
-				}
-				Document document = null;
-				try {
-					document = builder.parse(inStream);
-				} catch (SAXException e) {
-					throw new InitConfigurationException(errorMessage, e);
-				} catch (IOException e) {
-					throw new InitConfigurationException(errorMessage, e);
-				}
+		if (this.dataSource==null)
+			throw new InitConfigurationException("No data source!");
 
-				if (this.dataSource==null)
-					throw new InitConfigurationException("No data source!");
 
-				//loading resource file names and annotated class names
-				NodeList nodes = document.getElementsByTagName("mappings");
-				for (int i=0; i<nodes.getLength(); i++) {
-					Element node = (Element)nodes.item(i);
-					NodeList subNodes = node.getElementsByTagName("file");
-					for (int j=0; j<subNodes.getLength(); j++) {						
-						Element subNode = (Element) subNodes.item(j);
-						resourceFiles.add(subNode.getAttribute("name"));
-					}
-					subNodes = node.getElementsByTagName("annotated-type");
-					for (int j=0; j<subNodes.getLength(); j++) {						
-						Element subNode = (Element) subNodes.item(j);
-						annotatedTypes.add(subNode.getAttribute("class"));
-					}	
-					subNodes = node.getElementsByTagName("annotated-object");
-					for (int j=0; j<subNodes.getLength(); j++) {						
-						Element subNode = (Element) subNodes.item(j);
-						annotatedProxies.add(subNode.getAttribute("class"));
-					}					
-				}				
+		Document document = XMLParsersHelper.parseXMLFile(servletContext, configFileName);
 
-		} else {
-			throw new InitConfigurationException("Configuration file "
-					+ configFileName + " not found!");
-		}		
+		ConfigElements configTopElements = loadXMLTopLevelElements(document);
 
 		//try {
 			oracleHelper = new OracleHelper(this.getDataSource());
 			MappingHelper mappingHelper = new MappingHelper(oracleHelper);
 			MappingsLoader loader = new MappingsLoader(mappingHelper);
-			loader.loadMappings(servletContext, resourceFiles, annotatedTypes, annotatedProxies);
+			loader.loadMappings(servletContext, configTopElements);
 			
 		//}
 		/*
@@ -179,6 +124,36 @@ public class OranjProxyFactory {
 
 	}
 
+	public ConfigElements loadXMLTopLevelElements(Document document) throws InitConfigurationException {
+
+		ConfigElements configElements = new ConfigElements();
+
+
+			//loading resource file names and annotated class names
+			NodeList nodes = document.getElementsByTagName("mappings");
+			for (int i=0; i<nodes.getLength(); i++) {
+				Element node = (Element)nodes.item(i);
+				NodeList subNodes = node.getElementsByTagName("file");
+				for (int j=0; j<subNodes.getLength(); j++) {
+					Element subNode = (Element) subNodes.item(j);
+					configElements.getResourceFiles().add(subNode.getAttribute("name"));
+				}
+				subNodes = node.getElementsByTagName("annotated-type");
+				for (int j=0; j<subNodes.getLength(); j++) {
+					Element subNode = (Element) subNodes.item(j);
+					configElements.getAnnotatedTypes().add(subNode.getAttribute("class"));
+				}
+				subNodes = node.getElementsByTagName("annotated-object");
+				for (int j=0; j<subNodes.getLength(); j++) {
+					Element subNode = (Element) subNodes.item(j);
+					configElements.getAnnotatedProxies().add(subNode.getAttribute("class"));
+				}
+			}
+
+
+		return configElements;
+	}
+
 	
 	/**
 	 * Returns data source object currently using by the library
@@ -188,8 +163,38 @@ public class OranjProxyFactory {
 		return dataSource;
 	}
 
-
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public static class ConfigElements {
+
+		public Set<String> resourceFiles = new HashSet<String>();
+		public Set<String> annotatedTypes = new HashSet<String>();
+		public Set<String> annotatedProxies = new HashSet<String>();
+
+		public Set<String> getResourceFiles() {
+			return resourceFiles;
+		}
+
+		public void setResourceFiles(Set<String> resourceFiles) {
+			this.resourceFiles = resourceFiles;
+		}
+
+		public Set<String> getAnnotatedTypes() {
+			return annotatedTypes;
+		}
+
+		public void setAnnotatedTypes(Set<String> annotatedTypes) {
+			this.annotatedTypes = annotatedTypes;
+		}
+
+		public Set<String> getAnnotatedProxies() {
+			return annotatedProxies;
+		}
+
+		public void setAnnotatedProxies(Set<String> annotatedProxies) {
+			this.annotatedProxies = annotatedProxies;
+		}
 	}
 }

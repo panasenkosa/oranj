@@ -1,0 +1,15 @@
+<!ELEMENT mappings (oranj-config | data-source | (to-generate)*)>
+
+        <!ELEMENT oranj-config EMPTY>
+        <!ATTLIST oranj-config file-name CDATA #REQUIRED>
+
+        <!ELEMENT data-source EMPTY>
+        <!ATTLIST data-source class CDATA #REQUIRED>
+        <!ATTLIST data-source url CDATA #REQUIRED>
+        <!ATTLIST data-source user CDATA #REQUIRED>
+        <!ATTLIST data-source password CDATA #REQUIRED>
+
+        <!ELEMENT to-generate (oracle-type*)>
+
+        <!ELEMENT oracle-type EMPTY>
+        <!ATTLIST oracle-type name CDATA #REQUIRED>
